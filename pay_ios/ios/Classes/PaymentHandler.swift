@@ -166,6 +166,19 @@ class PaymentHandler: NSObject {
     if let supportedNetworks = supportedNetworks(from: paymentConfigurationString) {
       paymentRequest.supportedNetworks = supportedNetworks
     }
+
+    // Add recurring payment request if available.
+    if let recurringPaymentRequest = paymentConfiguration["recurringPaymentRequest"] as? [String: Any] {
+      paymentRequest.recurringPaymentRequest = PKRecurringPaymentRequest(
+        paymentDescription: recurringPaymentRequest["paymentDescription"] as! String, 
+        regularBilling: PKRecurringPaymentSummaryItem(
+          label: recurringPaymentRequest["regularBilling"]["label"] as! String, 
+          amount: NSDecimalNumber(string: (recurringPaymentRequest["regularBilling"]["amount"] as! String), locale:["NSLocaleDecimalSeparator": "."]), 
+          type: (PKPaymentSummaryItemType.fromString(recurringPaymentRequest["regularBilling"]["type"] as? String ?? "final_price"))
+        ), 
+        managementURL: URL(string: recurringPaymentRequest["managementURL"])
+      )
+    }
     
     return paymentRequest
   }
