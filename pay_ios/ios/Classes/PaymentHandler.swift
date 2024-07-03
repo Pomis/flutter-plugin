@@ -129,6 +129,13 @@ class PaymentHandler: NSObject {
     // Create payment request and include summary items
     let paymentRequest = PKPaymentRequest()
     paymentRequest.paymentSummaryItems = paymentItems.map { item in
+      if item["isRecurringPaymentItem"] as? bool == true {
+        return PKRecurringPaymentSummaryItem(
+          label: item["label"] as! String,
+          amount: NSDecimalNumber(string: (item["amount"] as! String), locale:["NSLocaleDecimalSeparator": "."])
+        )
+      }
+
       return PKPaymentSummaryItem(
         label: item["label"] as! String,
         amount: NSDecimalNumber(string: (item["amount"] as! String), locale:["NSLocaleDecimalSeparator": "."]),

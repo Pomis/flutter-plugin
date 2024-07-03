@@ -101,3 +101,29 @@ class PaymentItem {
         'status': status.toSimpleString(),
       };
 }
+
+class RecurringPaymentItem extends PaymentItem {
+  final IntervalUnit intervalUnit;
+
+  final DateTime startDate;
+
+  RecurringPaymentItem({
+    required this.intervalUnit,
+    required this.startDate,
+    required super.amount,
+    super.label,
+    // super.type = PaymentItemType.total,
+    super.status = PaymentItemStatus.unknown,
+  });
+
+  @override
+  Map<String, Object?> toMap() => {
+      'label': label,
+      'amount': amount,
+      'status': status.toSimpleString(),
+      'intervalUnit': intervalUnit.toString(),
+      'isRecurringPaymentItem': true,
+    };
+}
+
+enum IntervalUnit { month, day }
