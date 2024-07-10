@@ -29,7 +29,7 @@ export 'package:pay_platform_interface/core/payment_configuration.dart'
     show PayProvider, PaymentConfiguration;
 
 export 'package:pay_platform_interface/core/payment_item.dart'
-    show PaymentItem, PaymentItemType, PaymentItemStatus;
+    show PaymentItem, PaymentItemType, PaymentItemStatus, RecurringPaymentItem, IntervalUnit;
 
 export 'package:pay_android/pay_android.dart'
     show RawGooglePayButton, GooglePayButtonTheme, GooglePayButtonType;

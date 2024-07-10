@@ -123,6 +123,7 @@ class RecurringPaymentItem extends PaymentItem {
       'status': status.toSimpleString(),
       'intervalUnit': intervalUnit.toString(),
       'isRecurringPaymentItem': true,
+      'startDate': startDate.toIso8601String(),
     };
 }
 

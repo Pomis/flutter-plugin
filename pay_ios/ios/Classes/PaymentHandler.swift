@@ -129,11 +129,14 @@ class PaymentHandler: NSObject {
     // Create payment request and include summary items
     let paymentRequest = PKPaymentRequest()
     paymentRequest.paymentSummaryItems = paymentItems.map { item in
-      if item["isRecurringPaymentItem"] as? bool == true {
-        return PKRecurringPaymentSummaryItem(
+      if item["isRecurringPaymentItem"] as? Bool == true {
+        let summaryItem = PKRecurringPaymentSummaryItem(
           label: item["label"] as! String,
           amount: NSDecimalNumber(string: (item["amount"] as! String), locale:["NSLocaleDecimalSeparator": "."])
         )
+        summaryItem.startDate = parse(isoDate: item["startDate"] as! String)
+        summaryItem.endDate = parse(isoDate: item["startDate"] as! String)
+        return summaryItem
       }
 
       return PKPaymentSummaryItem(
@@ -175,19 +178,31 @@ class PaymentHandler: NSObject {
     }
 
     // Add recurring payment request if available.
-    if let recurringPaymentRequest = paymentConfiguration["recurringPaymentRequest"] as? [String: Any] {
-      paymentRequest.recurringPaymentRequest = PKRecurringPaymentRequest(
-        paymentDescription: recurringPaymentRequest["paymentDescription"] as! String, 
-        regularBilling: PKRecurringPaymentSummaryItem(
-          label: recurringPaymentRequest["regularBilling"]["label"] as! String, 
-          amount: NSDecimalNumber(string: (recurringPaymentRequest["regularBilling"]["amount"] as! String), locale:["NSLocaleDecimalSeparator": "."]), 
-          type: (PKPaymentSummaryItemType.fromString(recurringPaymentRequest["regularBilling"]["type"] as? String ?? "final_price"))
-        ), 
-        managementURL: URL(string: recurringPaymentRequest["managementURL"])
-      )
-    }
+    // if let recurringPaymentRequest = paymentConfiguration["recurringPaymentRequest"] as? [String: Any] {
+    //   paymentRequest.recurringPaymentRequest = PKRecurringPaymentRequest(
+    //     paymentDescription: recurringPaymentRequest["paymentDescription"] as! String, 
+    //     regularBilling: PKRecurringPaymentSummaryItem(
+    //       label: "asav",// recurringPaymentRequest["regularBilling"]["label"] as! String, 
+    //       amount: NSDecimalNumber(string: (recurringPaymentRequest["regularBilling"]["amount"] as! String), locale:["NSLocaleDecimalSeparator": "."]), 
+    //       type: (PKPaymentSummaryItemType.fromString(recurringPaymentRequest["regularBilling"]["type"] as? String ?? "final_price"))
+    //     ), 
+    //     managementURL: URL(string: recurringPaymentRequest["managementURL"])!
+    //   )
+    // }
     
     return paymentRequest
+  }
+
+  private static func parse(isoDate: String?) -> Date? {
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale(identifier: "en_US")
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+
+    if let isoDate = isoDate as? String {
+      return dateFormatter.date(from:isoDate)!
+    } else {
+      return nil;
+    }
   }
 }
 
